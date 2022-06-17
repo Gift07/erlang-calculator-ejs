@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erlang Calculator</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  </head>
+  <body>
+    <div class="main">
+        <!-- nav -->
+        <div style="display: flex; height: 100px; flex-direction: row; justify-content: space-between; background-color: rebeccapurple;">
+            <div style="margin: 15px 0px 0px 50px;">
+                <h3 style="color: white;"><b>Erlang Calculator</b></h3>
+            </div>
+            <div style=" margin: 40px 50px 0px 0px;">
+                <ul class="list-unstyled">
+                    <li style="display: inline-block; margin-left: 20px;">
+                        
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+      <div style="width: 400px; margin: 50px auto;">
+        <form>
+            <select id="erlangbc" onchange="erlangBC(this)" class="form-control">
+                <option value="" disabled selected>What to calculate Erlang B or C...</option>
+                <option value="b">Erlang B</option>
+                <option value="c">Erlang C</option>
+            </select>
+
+            <select id="erlangb" onchange="erlangB(this)" class="form-control" style="display: none; margin-top: 10px;">
+                <option value="" disabled selected>What to calculate...</option>
+                <option value="bp">block prob</option>
+                <option value="br">arrival rate</option>
+                <option value="bn">channel num</option>
+                <option value="bl">offered load</option>
+                <option value="bt">holding time</option>
+            </select>
+
+            <select id="erlangc" onchange="erlangC(this)" class="form-control" style="display: none; margin-top: 10px;">
+                <option value="" disabled selected>What to calculate...</option>
+                <option value="cp">Wait prob</option>
+                <option value="cs">Number of server</option>
+            </select>
+
+            <div class="form-group" style="display: non; margin-top: 10px;">
+                <input id="a" class="form-control">
+            </div>
+
+            <div class="form-group" style="display: non; margin-top: 10px;">
+                <input id="b" class="form-control">
+            </div>
+
+            <div class="form-group text-center" style="display: non; margin-top: 10px;">
+                <button type="submit" id="submit" class="btn btn-md btn-primary form-control">Calculate</button>
+                <h3 id="result" style="color: green; font-size: 20; margin-top: 20px;"></h3>
+            </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script>
+
+        function erlangBC(event){
+            $("#a").val("")
+            $("#b").val("")
+            $("#erlangb").val()
+            $("#erlangc").val()
+            $("#result").text("")
+            $("#a").attr("placeholder", "")
+            $("#b").attr("placeholder", "")
+            if(event.value == "b"){
+                $("#erlangc").hide()
+                $("#erlangb").show()
+            }else{
+                $("#erlangc").show()
+                $("#erlangb").hide()
+            }
+        }
+
+        function erlangB(event){
+            if(event.value == "bp"){
+                $("#a").attr("placeholder", "offer load")
+                $("#b").attr("placeholder", "channel num")
+            }
+            else if(event.value == "bn"){
+                $("#a").attr("placeholder", "prob")
+                $("#b").attr("placeholder", "offer load")
+            }
+            else if(event.value == "bt"){
+                $("#a").attr("placeholder", "offer load")
+                $("#b").attr("placeholder", "arrival rate")
+            }
+            else if(event.value == "br"){
+                $("#a").attr("placeholder", "offer load")
+                $("#b").attr("placeholder", "hold time")
+            }
+            else{
+                $("#a").attr("placeholder", "hold time")
+                $("#b").attr("placeholder", "arrival rate")
+            }
+        }
+
+        function erlangC(event){
+            if(event.value == "cp"){
+                $("#a").attr("placeholder", "offer load")
+                $("#b").attr("placeholder", "channel num")
+            }
+            else{
+                $("#a").attr("placeholder", "prob")
+                $("#b").attr("placeholder", "offer load")
+            }
+        }
+
+        $(document).ready(function() {
+            $("#submit").on("click", function(e) {
+                e.preventDefault();
+
+                let body;
+                let path = "";
+                let a = $("#a").val();
+                let b = $("#b").val();
+
+                let erlangbc = $("#erlangbc").val()
+
+                if(erlangbc == "b"){
+                    let erlangb = $("#erlangb").val()
+                    if(erlangb == "bp"){
+                        path = "/erlangb-block-prob";
+                        body = {
+                            offer_load: a,
+                            channel_num: b,
+                        }
+                    }
+                    else if(erlangb == "bn"){
+                        path = "/erlangb-channel-num";
+                        body = {
+                            prob: a,
+                            offer_load: b,
+                        }
+                    }
+                    else if(erlangb == "bl"){
+                        path = "/erlangb-offered-load";
+                        body = {
+                            hold_time: a,
+                            arrival_rate: b,
+                        }
+                    }
+                    else if(erlangb == "bt"){
+                        path = "/erlangb-holdtime";
+                        body = {
+                            offer_load: a,
+                            arrival_rate: b,
+                        }
+                    }
+                    else if(erlangb == "br"){
+                        path = "/erlangb-arrivalrate";
+                        body = {
+                            offer_load: a,
+                            hold_time: b,
+                        }
+                    }
+                }else{
+                    let erlangc = $("#erlangc").val()
+                    if(erlangc == "cp"){
+                        path = "/erlangc-waitprob";
+                        body = {
+                            offer_load: a,
+                            channel_num: b,
+                        }
+                    }
+                    else if(erlangc == "cs"){
+                        path = "/erlangc-server";
+                        body = {
+                            prob: a,
+                            offer_load: b,
+                        }
+                    }
+                }
+
+                if(a != "" && b != "" && path != ""){
+                    fetch(`http://127.0.0.1:5559/api/v1${path}`, {
+                    mode: "cors",
+                    method: "POST",
+                    body: JSON.stringify(body),
+                    headers: { "Content-Type": "application/json;charset=utf-8" },
+                    })
+                    .then((r) => r.json())
+                    .then(({ status, message }) => {
+                        $("#result").text(message)
+                    })
+                    .catch((e) => {
+                        alert(e);
+                    });
+                } else {
+
+                }
+            })
+        })
+    </script>
+    <style>
+      body {
+        overflow: hidden;
+      }
+    </style>
+  </body>
+</html>
