@@ -10,7 +10,7 @@ var session = require("express-session");
 import bodyParser = require("body-parser");
 import createError = require("http-errors");
 import cookieParser = require("cookie-parser");
-import { apiRoute, browseRoute } from "./routes";
+import { apiRoute, browseRoute,homeRoute } from "./routes";
 import { NextFunction, Request, Response } from "express";
 
 env.config();
@@ -93,7 +93,8 @@ env.config();
     });
 
     // routes
-    app.use("/", browseRoute);
+    app.use("/calculate", browseRoute);
+    app.use("/",homeRoute);
 
     // Api
     app.use(cors(corsOptions));

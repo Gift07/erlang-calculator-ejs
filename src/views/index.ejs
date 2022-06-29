@@ -1,29 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Erlang Calculator</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css" />
-  </head>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Erlang Calculator Home</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap Icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- SimpleLightbox plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <link rel="stylesheet" href="public/css/bootstrap.min.css" />
+    </head>
   <body>
-    <div class="main">
-        <!-- nav -->
-        <div style="display: flex; height: 100px; flex-direction: row; justify-content: space-between; background-color: rebeccapurple;">
-            <div style="margin: 15px 0px 0px 50px;">
-                <h3 style="color: white;"><b>Erlang Calculator</b></h3>
-            </div>
-            <div style=" margin: 40px 50px 0px 0px;">
-                <ul class="list-unstyled">
-                    <li style="display: inline-block; margin-left: 20px;">
-                        
-                    </li>
-                </ul>
-            </div>
-        </div>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top py-3" id="mainNav">
+          <div class="container px-4 px-lg-5">
+              <a class="navbar-brand text-uppercase" href="/">Erlang calculator</a>
+              <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon">
 
-      <div style="width: 400px; margin: 50px auto;">
+                </span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarResponsive">
+                  <ul class="navbar-nav ms-auto my-2 my-lg-0">
+                      <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                      <li class="nav-item"><a class="nav-link" href="calculate">Calculate</a></li>
+                  </ul>
+              </div>
+          </div>
+      </nav>
+    <div class="container">
+        <!-- nav -->
+      <div style="width: 400px; margin: 50px auto; padding-top: 20rem;">
         <form>
             <select id="erlangbc" onchange="erlangBC(this)" class="form-control">
                 <option value="" disabled selected>What to calculate Erlang B or C...</option>
@@ -33,17 +47,17 @@
 
             <select id="erlangb" onchange="erlangB(this)" class="form-control" style="display: none; margin-top: 10px;">
                 <option value="" disabled selected>What to calculate...</option>
-                <option value="bp">block prob</option>
-                <option value="br">arrival rate</option>
-                <option value="bn">channel num</option>
-                <option value="bl">offered load</option>
-                <option value="bt">holding time</option>
+                <option value="bp">Blocking probability</option>
+                <option value="br">Call Arrival rate</option>
+                <option value="bn">Number of channels</option>
+                <option value="bl">Offered load</option>
+                <option value="bt">Holding time</option>
             </select>
 
             <select id="erlangc" onchange="erlangC(this)" class="form-control" style="display: none; margin-top: 10px;">
                 <option value="" disabled selected>What to calculate...</option>
-                <option value="cp">Wait prob</option>
-                <option value="cs">Number of server</option>
+                <option value="cp">Waiting probability</option>
+                <option value="cs">Number of servers</option>
             </select>
 
             <div class="form-group" style="display: non; margin-top: 10px;">
@@ -55,7 +69,7 @@
             </div>
 
             <div class="form-group text-center" style="display: non; margin-top: 10px;">
-                <button type="submit" id="submit" class="btn btn-md btn-primary form-control">Calculate</button>
+                <button type="submit" id="submit" class="btn btn-md bg-primary text-white form-control">Calculate</button>
                 <h3 id="result" style="color: green; font-size: 20; margin-top: 20px;"></h3>
             </div>
         </form>
@@ -85,35 +99,35 @@
 
         function erlangB(event){
             if(event.value == "bp"){
-                $("#a").attr("placeholder", "offer load")
-                $("#b").attr("placeholder", "channel num")
+                $("#a").attr("placeholder", "Offered load (in Erlangs)")
+                $("#b").attr("placeholder", "Number of channels")
             }
             else if(event.value == "bn"){
-                $("#a").attr("placeholder", "prob")
-                $("#b").attr("placeholder", "offer load")
+                $("#a").attr("placeholder", "Blocking probability")
+                $("#b").attr("placeholder", "Offered load (in Erlangs)")
             }
             else if(event.value == "bt"){
-                $("#a").attr("placeholder", "offer load")
-                $("#b").attr("placeholder", "arrival rate")
+                $("#a").attr("placeholder", "Offered load (in Erlangs)")
+                $("#b").attr("placeholder", "Call Arrival rate (in calls per hour)")
             }
             else if(event.value == "br"){
-                $("#a").attr("placeholder", "offer load")
-                $("#b").attr("placeholder", "hold time")
+                $("#a").attr("placeholder", "Offered load (in Erlangs)")
+                $("#b").attr("placeholder", "Holding time (in Seconds)")
             }
             else{
-                $("#a").attr("placeholder", "hold time")
-                $("#b").attr("placeholder", "arrival rate")
+                $("#a").attr("placeholder", "Holding time (in Seconds)")
+                $("#b").attr("placeholder", "Call Arrival rate (in calls per hour)")
             }
         }
 
         function erlangC(event){
             if(event.value == "cp"){
-                $("#a").attr("placeholder", "offer load")
-                $("#b").attr("placeholder", "channel num")
+                $("#a").attr("placeholder", "Offered load (in Erlangs)")
+                $("#b").attr("placeholder", "Number of channels")
             }
             else{
-                $("#a").attr("placeholder", "prob")
-                $("#b").attr("placeholder", "offer load")
+                $("#a").attr("placeholder", "Waiting probability")
+                $("#b").attr("placeholder", "Offered load ( in Erlangs)")
             }
         }
 
@@ -147,12 +161,13 @@
                     else if(erlangb == "bl"){
                         path = "/erlangb-offered-load";
                         body = {
-                            hold_time: a,
+                            holding_time: a,
                             arrival_rate: b,
                         }
                     }
                     else if(erlangb == "bt"){
                         path = "/erlangb-holdtime";
+                        console.log({a,b})
                         body = {
                             offer_load: a,
                             arrival_rate: b,
