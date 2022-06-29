@@ -11,10 +11,10 @@ export class ApiController {
         Accept: "application/json",
         "User-Agent": "my-reddit-client",
       },
-      url: "https://erlang-calculate.herokuapp.com/erlangC/server",
+      url: "http://127.0.0.1:8000/api/number-server",
       body: {
         prob: req.body["prob"],
-        offerLoad: req.body["offer_Load"],
+        offerLoad: req.body["offer_load"],
       },
     };
 
@@ -22,7 +22,8 @@ export class ApiController {
       if (error) {
         res.status(200).json({ status: false, message: error });
       } else {
-        res.status(200).json({ status: true, message: body });
+        const {answer} = body
+        res.status(200).json({ status: true, message: answer });
       }
     });
   }
@@ -85,10 +86,10 @@ export class ApiController {
         Accept: "application/json",
         "User-Agent": "my-reddit-client",
       },
-      url: "http://127.0.0.1:8000/num-channel",
+      url: "http://127.0.0.1:8000/number-channel",
       body: {
-        prob: req.body["Block prob"],
-        offerLoad: req.body["offer_Load"],
+        prob: req.body["prob"],
+        offerLoad: req.body["offer_load"],
       },
     };
 
