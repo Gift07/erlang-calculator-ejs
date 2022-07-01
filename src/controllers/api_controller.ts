@@ -102,6 +102,27 @@ export class ApiController {
       }
     });
   }
+  static erlangbChannelNumChart(req: Request, res: Response, next: NextFunction) {
+    const options = {
+      json: true,
+      method: "POST",
+      headers: {
+        "Accept-Charset": "utf-8",
+        Accept: "application/json",
+        "User-Agent": "my-reddit-client",
+      },
+      url: "http://127.0.0.1:8000/chart",
+      body:req.body,
+    };
+
+    request(options, async (error, response, body) => {
+      if (error) {
+        res.status(200).json({ status: false, message: error });
+      } else {
+        res.status(200).json({ status: true, message: body });
+      }
+    });
+  }
   static erlangbOfferedLoad(req: Request, res: Response, next: NextFunction) {
     console.log(res)
     const options = {

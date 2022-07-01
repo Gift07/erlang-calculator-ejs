@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Erlang Calculator Home</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap Icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- SimpleLightbox plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+        <link rel="stylesheet" href="public/css/bootstrap.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top py-3" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand text-uppercase" href="/">Erlang calculator</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+  
+                  </span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto my-2 my-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="calculate">Calculate</a></li>
+                        <li class="nav-item"><a class="nav-link" href="chart">chart</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="form-container">
+            <form class="form">  
+                <div class="form-group" style="display: non; margin-top: 10px;">
+                    <input id="a" class="form-control" placeholder="Enter blocking plobability">
+                </div>
+                <div class="form-group" style="display: non; margin-top: 10px;">
+                    <input id="b" class="form-control" placeholder="Enter offered Load">
+                </div>
+                <div class="form-group text-center" style="display: non; margin-top: 10px;">
+                    <button type="submit" id="submit" class="btn btn-md bg-primary text-white form-control">add values</button>
+                    <h3 id="result" style="color: green; font-size: 20; margin-top: 20px;"></h3>
+                </div>
+            </form>
+        </div>
+        <div class="p-5">
+            <table class="table table-striped" id="table_id">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">waiting probability</th>
+                    <th scope="col">Offered Load</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+              <div class="form-group text-center" style="display: non; margin-top: 10px;">
+                <button type="button" id="plot" class="btn btn-md bg-primary text-white form-control">
+                    plot graph
+                </button>
+                <h3 id="result" style="color: green; font-size: 20; margin-top: 20px;"></h3>
+            </div>
+        </div>
+        <div id="item">
+            <canvas id="myChart" class="foo" style="width:100%;max-width:1000px"></canvas>
+        </div>
+        <script src="/js/jquery-3.6.0.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>     
+        <script>
+            let body = [];
+            let state = {
+                prob:"",
+                offer_load:"",
+            };
+            var empty_row = "<tr><td colspan='3' class='text-center'>Please add Values</td></tr>"
+            $(document).ready(function() {
+                $("#table_id tbody").append(empty_row)
+            })
+            $(document).ready(function(){
+            $("#submit").click(function(e){
+                e.preventDefault()
+                let a = $("#a").val();
+                let b = $("#b").val();
+
+                if(a != "" && b != ""){
+                    if($("#table_id tbody").children().children().length ==1){
+                        $("#table_id tbody").html(" ")
+                    }
+                    var srNo = $("#table_id tbody").children().length + 1
+
+                    var dynamicTbr = "<tr><td>" +srNo+ "</td><td>" + a + "</td><td>" + b + "</td></tr>"
+                    $("#table_id tbody").append(dynamicTbr)
+                    $("#a").val()
+                    $("#b").val()
+
+                    state.prob = a;
+                    state.offer_load = b
+
+                    body.push(state)
+                    if(localStorage.getItem("session")){
+                        var values = JSON.parse(localStorage.getItem("session"))
+                        values.push(state)
+                        console.log(values)
+                        localStorage.setItem('session', JSON.stringify(values))
+                    }
+                    if(!localStorage.getItem("session")){
+                        localStorage.setItem('session', JSON.stringify(body))
+                    }
+                }
+            });
+            });
+            $(document).ready(function() {
+                $("#plot").click(function(){
+                    const values = JSON.parse(localStorage.getItem("session"))
+                    fetch(`http://127.0.0.1:5559/api/v1/erlangb-channel-num/chart`, {
+                    mode: "cors",
+                    method: "POST",
+                    body: JSON.stringify(values),
+                    headers: { "Content-Type": "application/json;charset=utf-8" },
+                    })
+                    .then((r) => r.json())
+                    .then(({ status, message }) => {  
+                        let data = []
+                        let labels = []
+                        localStorage.removeItem("session")
+                        message.sort(function(a, b) {
+                            return a.prob - b.prob 
+                        }).map(item => {
+                            data.push(item.number_channel)
+                            labels.push(item.offerLoad)
+                        }) 
+                        console.log(data) 
+                        const ctx = document.getElementById('myChart').getContext('2d');
+    
+                        new Chart(ctx, {
+                        type: "line",
+                        data: {
+                            labels:labels ,
+                            datasets: [{
+                                label: 'Number of Channels',
+                                data: data,
+                                fill: false,
+                                borderColor: 'rgb(75, 192, 192)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                        });
+                    })
+                    })
+                    .catch((e) => {
+                        alert(e);
+                    });
+            })
+
+        </script>
+        <style>
+            body {
+                overflow-x: hidden;
+            }
+            .form-container{
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                padding-top: 60px;
+            }
+            #item {
+                display: none;
+            }
+            html.no-js #item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
+    </body>
+</html>
